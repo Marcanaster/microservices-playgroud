@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Playground.API.Config;
 using Playground.API.Model.Context;
+using Playground.API.Repository;
 using Playground.API.Services;
 using Playground.API.Services.Implementations;
-using System.Runtime.CompilerServices;
 
 namespace Playground.API
 {
@@ -24,10 +24,12 @@ namespace Playground.API
             services.AddSingleton(mapper);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.AddScoped<IProductRepository, ProductRepository>();    
+            services.AddScoped<IPersonService, PersonService>();
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddScoped<IPersonService, PersonService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)
