@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Playground.API.Config;
 using Playground.API.Model.Context;
 using Playground.API.Services;
 using Playground.API.Services.Implementations;
@@ -17,6 +19,11 @@ namespace Playground.API
         {
             var connection = Configuration["MySqlConnection:MySqlConnectionString"];
             services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
+            IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
