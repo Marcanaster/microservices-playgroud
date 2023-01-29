@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Playground.API.Data.ValueObjects;
-using Playground.API.Model;
 using Playground.API.Repository;
 
 namespace Playground.API.Controllers
@@ -28,7 +26,7 @@ namespace Playground.API.Controllers
         public async Task<ActionResult<ProductVO>> FindById(long id)
         {
             var product = await _repository.FindById(id);
-            if(product == null)  return NotFound();
+            if(product.Id <= 0)  return NotFound();
 
             return Ok(product);
         }
