@@ -1,4 +1,6 @@
-﻿using Playground.API.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using Playground.API.Model.Context;
+using Playground.API.Services;
 using Playground.API.Services.Implementations;
 using System.Runtime.CompilerServices;
 
@@ -13,6 +15,8 @@ namespace Playground.API
         public IConfiguration Configuration { get;}
         public void ConfigureServices(IServiceCollection services)
         {
+            var connection = Configuration["MySqlConnection:MySqlConnectionString"];
+            services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
