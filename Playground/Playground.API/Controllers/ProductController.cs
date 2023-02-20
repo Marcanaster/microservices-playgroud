@@ -22,11 +22,26 @@ namespace Playground.API.Controllers
             return Ok(products);
         }
 
+        private void NotifyCancel()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LogTheError(Exception ex)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LoadTheData()
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductVO>> FindById(long id)
         {
             var product = await _repository.FindById(id);
-            if(product.Id <= 0)  return NotFound();
+            if (product.Id <= 0) return NotFound();
 
             return Ok(product);
         }
@@ -51,7 +66,7 @@ namespace Playground.API.Controllers
         public async Task<ActionResult> Delete(long id)
         {
             var status = await _repository.Delete(id);
-            if(!status) return BadRequest();
+            if (!status) return BadRequest();
 
             return Ok(status);
         }

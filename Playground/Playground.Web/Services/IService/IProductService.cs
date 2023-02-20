@@ -1,4 +1,4 @@
-﻿using Playground.Web.Model;
+﻿using Playground.Web.Models;
 
 namespace Playground.Web.Services.IService
 {
@@ -8,6 +8,6 @@ namespace Playground.Web.Services.IService
         Task<ProductModel> GetProductById(long id);
         Task<ProductModel> CreateProduct(ProductModel model);
         Task<ProductModel> UpdateProduct(ProductModel model);
-        Task<ProductModel> DeleteProduct(long id);
+        Task<bool> DeleteProduct(long id);
     }
 }
