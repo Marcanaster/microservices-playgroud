@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Playground.API.Data.ValueObjects;
 using Playground.API.Repository;
+using Playground.API.Utils;
 
 namespace Playground.API.Controllers
 {
@@ -16,6 +18,7 @@ namespace Playground.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProductVO>>> FindAll()
         {
             var products = await _repository.FindAll();
@@ -38,6 +41,7 @@ namespace Playground.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ProductVO>> FindById(long id)
         {
             var product = await _repository.FindById(id);
@@ -47,6 +51,7 @@ namespace Playground.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ProductVO>> Create(ProductVO vo)
         {
             if (vo == null) return BadRequest();
@@ -55,6 +60,7 @@ namespace Playground.API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult<ProductVO>> Update(ProductVO vo)
         {
             if (vo == null) return BadRequest();
@@ -63,6 +69,7 @@ namespace Playground.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Role.Admin)]
         public async Task<ActionResult> Delete(long id)
         {
             var status = await _repository.Delete(id);
