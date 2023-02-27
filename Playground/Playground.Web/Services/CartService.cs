@@ -49,10 +49,6 @@ namespace Playground.Web.Services
                 throw new Exception("Somenthing went when calling API");
         }
 
-        public async Task<bool> ApplyCupon(CartViewModel cart, string cuponCode, string token)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<CartViewModel> Checkout(CartHeaderViewModel cartHeader, string token)
         {
@@ -63,13 +59,27 @@ namespace Playground.Web.Services
         {
             throw new NotImplementedException();
         }
-
-
-        public Task<bool> RemoveCupon(string userId, string token)
+        public async Task<bool> ApplyCupon(CartViewModel model, string token)
         {
-            throw new NotImplementedException();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _client.PostAsJson($"{BasePath}/apply-Coupon", model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<bool>();
+            else
+                throw new Exception("Somenthing went when calling API");
         }
 
 
+        public async Task<bool> RemoveCupon(string userId, string token)
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _client.DeleteAsync($"{BasePath}/remove-Coupon/{userId}");
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<bool>();
+            else
+                throw new Exception("Somenthing went when calling API");
+
+
+        }
     }
 }

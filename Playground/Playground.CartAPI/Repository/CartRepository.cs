@@ -17,9 +17,17 @@ namespace Playground.CartApi.Repository
             _mapper = mapper;
         }
 
-        public async Task<bool> ApplyCupon(string userId, string ciponCode)
+        public async Task<bool> ApplyCupon(string userId, string cuponCode)
         {
-            throw new NotImplementedException();
+            var header = await _context.CartHeaders.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (header != null)
+            {
+               header.CuponCode= cuponCode;
+                _context.CartHeaders.Update(header);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> ClearCard(string userId)
@@ -49,7 +57,15 @@ namespace Playground.CartApi.Repository
 
         public async Task<bool> RemoveCupon(string userId)
         {
-            throw new NotImplementedException();
+            var header = await _context.CartHeaders.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (header != null)
+            {
+                header.CuponCode = "";
+                _context.CartHeaders.Update(header);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> RemoveFromCart(long cartDetailId)
