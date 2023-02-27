@@ -16,11 +16,9 @@ namespace Playground.Web.Controllers
             _service = service;
         }
 
-        [Authorize]
         public async Task<IActionResult> ProductIndex()
         {
-            var token = await HttpContext.GetTokenAsync("access_token");
-            var products = await _service.FindAllProducts(token);
+            var products = await _service.FindAllProducts("");
             return View(products);
         }
         public async Task<IActionResult> ProductCreate()
@@ -30,7 +28,7 @@ namespace Playground.Web.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> ProductCreate(ProductModel model)
+        public async Task<IActionResult> ProductCreate(ProductViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +55,7 @@ namespace Playground.Web.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> ProductUpdate(ProductModel model)
+        public async Task<IActionResult> ProductUpdate(ProductViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +81,7 @@ namespace Playground.Web.Controllers
         }
         [HttpPost]
         [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> ProductDelete(ProductModel model)
+        public async Task<IActionResult> ProductDelete(ProductViewModel model)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
             var response = await _service.DeleteProduct(model.Id, token);

@@ -6,7 +6,7 @@ using Playground.API.Utils;
 
 namespace Playground.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -18,26 +18,10 @@ namespace Playground.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<ProductVO>>> FindAll()
         {
             var products = await _repository.FindAll();
             return Ok(products);
-        }
-
-        private void NotifyCancel()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LogTheError(Exception ex)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LoadTheData()
-        {
-            throw new NotImplementedException();
         }
 
         [HttpGet("{id}")]

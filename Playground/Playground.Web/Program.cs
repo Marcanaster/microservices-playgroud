@@ -31,6 +31,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpClient<IProductService, ProductService>(c => c.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductAPI"]));
 
+builder.Services.AddHttpClient<ICartService, CartService>(c => c.BaseAddress = new Uri(builder.Configuration["ServicesUrls:CartAPI"]));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

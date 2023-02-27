@@ -1,6 +1,7 @@
-﻿namespace Playground.Web.Models
+﻿namespace Playground.CartAPI.Data.VO
 {
-    public class ProductModel
+
+    public class ProductVO
     {
         public long Id { get; set; }
         public string Name { get; set; }

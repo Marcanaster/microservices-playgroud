@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Playground.Web.Models;
+using Playground.Web.Services.IService;
 using System.Diagnostics;
 
 namespace Playground.Web.Controllers
@@ -9,15 +10,58 @@ namespace Playground.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IProductService _service;
+        private readonly ICartService _cartservice;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IProductService service, ICartService cartservice)
         {
             _logger = logger;
+            _service = service;
+            _cartservice = cartservice;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var products = await _service.FindAllProducts("");
+            return View(products);
+        }
+        [Authorize]
+        public async Task<IActionResult> Details( int id)
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var model = await _service.GetProductById(id, token);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ActionName("Details")]
+        [Authorize]
+        public async Task<IActionResult> Detailspost( ProductViewModel model)
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+            CartViewModel cart = new()
+            {
+                CartHeader = new CartHeaderViewModel
+                {
+                    UserId = User.Claims.Where(u => u.Type == "sub")?.FirstOrDefault()?.Value
+                }
+            };
+            CartDetailViewModel cartDetail = new CartDetailViewModel()
+            {
+                Count = model.Count,
+                ProductId = model.Id,
+                Product = await _service.GetProductById(model.Id, token)
+            };
+            List<CartDetailViewModel> cartDetails = new List<CartDetailViewModel>();
+            cartDetails.Add(cartDetail);
+            cart.CartDetails= cartDetails;
+            var response = await _cartservice.AddItemToCart(cart, token);
+
+            if(response != null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return View(model);
         }
 
         public IActionResult Privacy()
