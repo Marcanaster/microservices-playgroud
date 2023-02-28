@@ -11,6 +11,6 @@ namespace Playground.Web.Services.IService
         Task<bool> ApplyCupon(CartViewModel cart, string token);
         Task<bool> RemoveCupon(string userId, string token);
         Task<bool> ClearCart(string userId, string token);
-        Task<CartViewModel> Checkout(CartHeaderViewModel cartHeader, string token);
+        Task<CartHeaderViewModel> Checkout(CartHeaderViewModel cartHeader, string token);
     }
 }

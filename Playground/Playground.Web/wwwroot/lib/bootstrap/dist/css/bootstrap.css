@@ -3866,11 +3866,12 @@ textarea.form-control-lg {
 }
 
 .nav {
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    background-color: #7F8F48;
 }
 
 .nav-link {

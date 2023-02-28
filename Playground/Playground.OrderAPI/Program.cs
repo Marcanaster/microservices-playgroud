@@ -1,23 +1,16 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Playground.CartApi.Repository;
-using Playground.CartAPI.Config;
-using Playground.CartAPI.Model.Context;
-using Playground.CartAPI.RabbitMQSender;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
-builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
-IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
-builder.Services.AddSingleton(mapper);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+//builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
 
-builder.Services.AddScoped<ICartRepository, CartRepository>();
 
-builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+//builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+//builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 
 // Add services to the container.
@@ -44,7 +37,7 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.CartAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.OrderAPI", Version = "v1" });
     c.EnableAnnotations();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -70,6 +63,7 @@ builder.Services.AddSwaggerGen(c =>
                     }
                 });
 });
+
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();

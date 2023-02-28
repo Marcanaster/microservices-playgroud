@@ -5,6 +5,7 @@ namespace Playground.CartApi.Data.VO
 {
     public class CartDetailVO
     {
+        public int Id { get; set; }
         public long CartHeaderId { get; set; }
         public CartHeaderVO CartHeader { get; set; }
         public long ProductId { get; set; }

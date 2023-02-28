@@ -2,7 +2,6 @@
 using Playground.Web.Services.IService;
 using Playground.Web.Utils;
 using System.Net.Http.Headers;
-using System.Reflection;
 
 namespace Playground.Web.Services
 {
@@ -48,13 +47,15 @@ namespace Playground.Web.Services
             else
                 throw new Exception("Somenthing went when calling API");
         }
-
-
-        public async Task<CartViewModel> Checkout(CartHeaderViewModel cartHeader, string token)
+        public async Task<CartHeaderViewModel> Checkout(CartHeaderViewModel model, string token)
         {
-            throw new NotImplementedException();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _client.PostAsJson($"{BasePath}/checkout", model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<CartHeaderViewModel>();
+            else
+                throw new Exception("Somenthing went when calling API");
         }
-
         public async Task<bool> ClearCart(string userId, string token)
         {
             throw new NotImplementedException();
@@ -68,8 +69,6 @@ namespace Playground.Web.Services
             else
                 throw new Exception("Somenthing went when calling API");
         }
-
-
         public async Task<bool> RemoveCupon(string userId, string token)
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

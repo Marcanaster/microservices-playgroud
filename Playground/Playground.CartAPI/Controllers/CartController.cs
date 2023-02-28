@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Playground.CartApi.Data.VO;
 using Playground.CartApi.Repository;
+using Playground.CartAPI.Messages;
+using Playground.CartAPI.RabbitMQSender;
 
 namespace Playground.CartApi.Controllers
 {
@@ -10,10 +12,11 @@ namespace Playground.CartApi.Controllers
     public class CartController : ControllerBase
     {
         private ICartRepository _repository;
-
-        public CartController(ICartRepository repository)
+        private IRabbitMQMessageSender _rabbitMQMessageSender;
+        public CartController(ICartRepository repository, IRabbitMQMessageSender rabbitMQMessageSender)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _rabbitMQMessageSender = rabbitMQMessageSender;
         }
 
         [HttpGet("find-cart/{id}")]
@@ -21,9 +24,6 @@ namespace Playground.CartApi.Controllers
         {
             var cart = await _repository.FindCartByUserID(id);
             if (cart == null) return NotFound();
-
-
-
             return Ok(cart);
         }
 
@@ -32,7 +32,6 @@ namespace Playground.CartApi.Controllers
         {
             var cart = await _repository.SaveOrUpdateCart(vo);
             if (cart == null) return NotFound();
-
             return Ok(cart);
         }
         
@@ -41,7 +40,6 @@ namespace Playground.CartApi.Controllers
         {
             var cart = await _repository.SaveOrUpdateCart(vo);
             if (cart == null) return NotFound();
-
             return Ok(cart);
         }
 
@@ -50,7 +48,6 @@ namespace Playground.CartApi.Controllers
         {
             var status = await _repository.RemoveFromCart(id);
             if (!status) return BadRequest();
-
             return Ok(status);
         }
 
@@ -59,18 +56,29 @@ namespace Playground.CartApi.Controllers
         {
             var status = await _repository.ApplyCupon(vo.CartHeader.UserId, vo.CartHeader.CuponCode);
             if (!status) return NotFound();
-
             return Ok(status);
         }
 
         [HttpDelete("remove-coupon/{userId}")]
         public async Task<ActionResult<CartVO>> RemoveCoupon(string userId)
         {
-            var cart = await _repository.RemoveCupon(userId);
-            if (cart == null) return NotFound();
-
-            return Ok(cart);
+            var status = await _repository.RemoveCupon(userId);
+            if (!status) return NotFound();
+            return Ok(status);
         }
+        
+        [HttpPost("checkout")]
+        public async Task<ActionResult<CheckoutHeaderVO>> Checkout(CheckoutHeaderVO vo)
+        {
+            if (vo?.UserId == null) return BadRequest();
+            var cart = await _repository.FindCartByUserID(vo.UserId);
+            if (cart == null) return NotFound();
+            vo.CartDetails = cart.CartDetails;
+            vo.DateTime = DateTime.Now;
 
+            _rabbitMQMessageSender.SendMessage(vo, "checkoutqueue");
+
+            return Ok(vo);
+        }
     }
 }
