@@ -1,16 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Playground.OrderApi.Repository;
+using Playground.OrderAPI.MessageConsumer;
+using Playground.OrderAPI.Model.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
-//builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
+builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22))));
+
+var builderConnection = new DbContextOptionsBuilder<MySqlContext>();
+builderConnection.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22)));
+builder.Services.AddSingleton(new OrderRepository(builderConnection.Options));
 
 
-//builder.Services.AddScoped<ICartRepository, CartRepository>();
-
-//builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 
 
 // Add services to the container.

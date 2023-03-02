@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Playground.OrderAPI.Model;
 
 namespace Playground.OrderAPI.Model.Context
 {
@@ -7,8 +8,8 @@ namespace Playground.OrderAPI.Model.Context
         public MySqlContext() { }
         public MySqlContext(DbContextOptions<MySqlContext> options) : base(options) { }
 
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> Details { get; set; }
+        public DbSet<OrderHeader> Headers { get; set; }
 
     }
 }
