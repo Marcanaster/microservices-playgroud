@@ -1,10 +1,10 @@
-﻿using Playground.CartAPI.Messages;
-using Playground.MessageBus;
+﻿using Playground.MessageBus;
+using Playground.PaymentAPI.Messages;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
-namespace Playground.CartAPI.RabbitMQSender
+namespace Playground.PaymentAPI.RabbitMQSender
 {
     public class RabbitMQMessageSender : IRabbitMQMessageSender
     {
@@ -37,7 +37,7 @@ namespace Playground.CartAPI.RabbitMQSender
             {
                 WriteIndented = true
             };
-            var json = JsonSerializer.Serialize<CheckoutHeaderVO>((CheckoutHeaderVO)baseMessage, options);
+            var json = JsonSerializer.Serialize<UpdatePaymentResultMessage>((UpdatePaymentResultMessage)baseMessage, options);
             var body = Encoding.UTF8.GetBytes(json);
             return body;
         }

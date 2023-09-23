@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Playground.CartApi.Data.VO;
 using Playground.CartApi.Repository;
@@ -73,7 +74,8 @@ namespace Playground.CartApi.Controllers
         [HttpPost("checkout")]
         public async Task<ActionResult<CheckoutHeaderVO>> Checkout(CheckoutHeaderVO vo)
         {
-            string token = Request.Headers["Authorization"];
+            string token = await HttpContext.GetTokenAsync("access_token");
+            //string token = Request.Headers["Authorization"];
             if (vo?.UserId == null) return BadRequest();
             var cart = await _cartRepository.FindCartByUserID(vo.UserId);
             if (cart == null) return NotFound();
@@ -84,12 +86,12 @@ namespace Playground.CartApi.Controllers
                 if (vo.DiscountAmount != coupon.DiscountAmount) return StatusCode(412);
             }
 
-
             vo.CartDetails = cart.CartDetails;
             vo.DateTime = DateTime.Now;
 
             _rabbitMQMessageSender.SendMessage(vo, "checkoutqueue");
 
+            await _cartRepository.ClearCard(vo.UserId);
             return Ok(vo);
         }
     }

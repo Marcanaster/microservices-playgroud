@@ -1,21 +1,16 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Playground.OrderApi.Repository;
-using Playground.OrderAPI.MessageConsumer;
-using Playground.OrderAPI.Model.Context;
-using Playground.OrdertAPI.RabbitMQSender;
+using Playground.PaymentAPI.MessageConsumer;
+using Playground.PaymentAPI.RabbitMQSender;
+using Playground.PaymentProcessor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
 
-var builderConnection = new DbContextOptionsBuilder<MySqlContext>();
-builderConnection.UseMySql(connection, new MySqlServerVersion(new Version(8, 0, 22)));
-builder.Services.AddSingleton(new OrderRepository(builderConnection.Options));
-
-builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
+
+builder.Services.AddSingleton<IProcessPayment, ProcessPayment>();
 
 builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
@@ -43,7 +38,7 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.OrderAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.PaymentAPI", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -76,7 +71,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }

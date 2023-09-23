@@ -24,10 +24,10 @@ namespace Playground.OrderApi.Repository
         public async Task UpdateOrderPaymentStatus(long orderHeaderID, bool status)
         {
             await using var _db = new MySqlContext(_context);
-            var header = await _db.Headers.FirstOrDefaultAsync(o=>o.Id== orderHeaderID);
-            if(header != null)
+            var header = await _db.Headers.FirstOrDefaultAsync(o => o.Id == orderHeaderID);
+            if (header != null)
             {
-                header.PaymentStatus= status;
+                header.PaymentStatus = status;
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Playground.OrderApi.Repository;
 using Playground.OrderAPI.Messages;
 using Playground.OrderAPI.Model;
+using Playground.OrdertAPI.RabbitMQSender;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -13,15 +14,17 @@ namespace Playground.OrderAPI.MessageConsumer
         private readonly OrderRepository _repository;
         private IConnection _connection;
         private IModel _channel;
+        private IRabbitMQMessageSender _rabbitMQMessageSender;
 
-        public RabbitMQCheckoutConsumer(OrderRepository repository)
+        public RabbitMQCheckoutConsumer(OrderRepository repository, IRabbitMQMessageSender rabbitMQMessageSender)
         {
             _repository = repository;
+            _rabbitMQMessageSender = rabbitMQMessageSender;
             var factory = new ConnectionFactory
             {
                 HostName = "localhost",
                 UserName = "guest",
-                Password = "guest"
+                Password = "guest",
             };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
@@ -62,6 +65,7 @@ namespace Playground.OrderAPI.MessageConsumer
                 Phone= vo.Phone,    
                 DateTime = vo.DateTime
             };
+
             foreach (var details in vo.CartDetails)
             {
                 OrderDetail detail = new()
@@ -76,6 +80,27 @@ namespace Playground.OrderAPI.MessageConsumer
             }
 
             await _repository.AddOrder(order);
+            PaymentVO payment = new()
+            {
+                Name = order.FirstName+ " " +order.LastName,
+                CardNumber= order.CardNumber,
+                CVV =   order.CVV,
+                ExpireMonthYear = order.ExpireMonthYear,    
+                OrderId =   order.Id,
+                PurchaseAmount= order.PurchaseAmount,
+                Email= order.Email
+            };
+
+            try
+            {
+                _rabbitMQMessageSender.SendMessage(payment, "orderpaymentprocessqueue");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

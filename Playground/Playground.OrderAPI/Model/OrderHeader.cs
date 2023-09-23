@@ -37,13 +37,13 @@ namespace Playground.OrderAPI.Model
         public string Phone { get; set; }
 
         [Column("card_number")]
-        public string CardNumber { get; set; }
+        public string? CardNumber { get; set; }
 
         [Column("cvv")]
-        public string CVV { get; set; }
+        public string? CVV { get; set; }
 
         [Column("expire_month_year")]
-        public string ExpireMonthYear { get; set; }
+        public string? ExpireMonthYear { get; set; }
 
         [Column("total_itens")]
         public int CartTotalItens { get; set; }
